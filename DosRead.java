@@ -27,6 +27,17 @@ public class DosRead {
             /*
               À compléter
             */
+            // Extract relevant information from the WAV header
+            sampleRate = byteArrayToInt(header, 24, 32);
+            bitsPerSample = byteArrayToInt(header, 34, 16);
+            dataSize = byteArrayToInt(header, 40, 32);
+
+            // Output information (you can modify or extend this as needed)
+            System.out.println("Sample Rate: " + sampleRate + " Hz");
+            System.out.println("Bits per Sample: " + bitsPerSample + " bits");
+            System.out.println("Data Size: " + dataSize + " bytes");
+
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -67,6 +78,21 @@ public class DosRead {
         /*
           À compléter
         */
+        int bytesPerSample = bitsPerSample / 8;
+        audio = new double[dataSize / bytesPerSample];
+
+        for (int i = 0, j = 0; i < dataSize; i += bytesPerSample, j++) {
+          if (bytesPerSample == 2) {
+            audio[j] = ((audioData[i + 1] & 0xFF) << 8 | (audioData[i] & 0xFF)) / 32768.0;
+          } else if (bytesPerSample == 4) {
+            int intBits = ((audioData[i + 3] & 0xFF) << 24) |
+                ((audioData[i + 2] & 0xFF) << 16) |
+                ((audioData[i + 1] & 0xFF) << 8) |
+                (audioData[i] & 0xFF);
+            audio[j] = Float.intBitsToFloat(intBits);
+          }
+        }
+
     }
 
     /**
@@ -109,6 +135,42 @@ public class DosRead {
       /*
         À compléter
       */
+      StringBuilder decodedString = new StringBuilder();
+      int startIdx = -1;
+
+      // Find the index where START_SEQ starts in outputBits
+      for (int i = 0; i <= outputBits.length - START_SEQ.length; i++) {
+        boolean match = true;
+        for (int j = 0; j < START_SEQ.length; j++) {
+          if (outputBits[i + j] != START_SEQ[j]) {
+            match = false;
+            break;
+          }
+        }
+        if (match) {
+          startIdx = i;
+          break;
+        }
+      }
+
+      if (startIdx != -1) {
+        // Iterate over outputBits starting from startIdx
+        for (int i = startIdx; i < outputBits.length; i += 8) {
+          // Extract 8 bits to form a byte
+          int byteValue = 0;
+          for (int j = 0; j < 8; j++) {
+            byteValue = (byteValue << 1) | outputBits[i + j];
+          }
+
+          // Convert the byte to a char and append to the decoded string
+          decodedString.append((char) byteValue);
+        }
+
+        // Display the decoded string
+        System.out.println(decodedString.toString());
+      } else {
+        System.out.println("Start sequence not found in outputBits.");
+      }
     }
 
     /**
@@ -119,6 +181,10 @@ public class DosRead {
       /*
         À compléter
       */
+      for (char value : data) {
+        System.out.print(value + " ");
+      }
+      System.out.println();
     }
 
 
