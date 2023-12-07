@@ -64,29 +64,32 @@ public class DosSend {
             outStream.write(new byte[]{'R', 'I', 'F', 'F'});
             /*À compléter*/
             // File size (usually done after creation)
-            outStream.write(new byte[]{' ', ' ', ' ', ' '});
+            writeLittleEndian((int)nbBytes, 4, outStream);
             // File Type Header, WAVE
             outStream.write(new byte[]{'W', 'A', 'V', 'E'});
-            // Fromat chunk marker
+
+            // Fromat block marker
             outStream.write(new byte[]{'f', 'm', 't', ' '});
-            // Lenght of data
-            writeLittleEndian(FMT, 4, outStream);
+            // Number of chunk in block
+            writeLittleEndian(16, 4, outStream);
+            
             // Type of format
-            writeLittleEndian(2, 2, outStream);
+            writeLittleEndian(1, 2, outStream);
             // Number of channels
             writeLittleEndian(CHANNELS, 2, outStream);
-            // Sample rate
+            // Frequency
             writeLittleEndian(FECH, 4, outStream);
-            // (Sample Rate * BitsPerSample * Channels) / 8
-            writeLittleEndian((int)nbBytes, 4, outStream);
-            // 1 --> 8 bit-mono
+            // Bytes per second
+            writeLittleEndian(BAUDS, 4, outStream);
+            // Bytes per block
             writeLittleEndian(1, 2, outStream);
             // Bits per sample
             writeLittleEndian(8, 2, outStream);
+            
             // Data section marker
             outStream.write(new byte[]{'d', 'a', 't', 'a'});
             // Size of data section
-            writeLittleEndian((int)taille, 4, outStream);
+            writeLittleEndian((int)nbBytes-44, 4, outStream);
         } catch(Exception e){
             System.out.printf(e.toString());
         }
@@ -100,7 +103,7 @@ public class DosSend {
     public void writeNormalizeWavData(){
         try {
             for (double data : dataMod) {
-                writeLittleEndian((int)data, 8, outStream);                
+                writeLittleEndian((int)data, 1, outStream);                
             }
         }
         catch (Exception e) {
@@ -150,10 +153,20 @@ public class DosSend {
      */
     public void modulateData(byte[] bits){
         /* À compléter */
-        this.dataMod = new double[bits.length + 8];
+        int n = FECH/BAUDS;
+        int nbrEchantillons = (bits.length+START_SEQ.length)*n;
+        dataMod = new double[nbrEchantillons];
+        for(int i = 0; i < START_SEQ.length; i++){
+            for(int j = 0; j < n; j++){
+                if(START_SEQ[i] == 1)
+                    dataMod[(i+1)*(j+1)] = MAX_AMP * Math.sin(Math.PI*2*FP*i/FECH);
+            }
+        }
         for(int i = 0; i < bits.length; i++){
-            if(bits[i] == 1)
-                dataMod[i] = this.MAX_AMP * Math.sin(2*Math.PI*this.FP*i/FECH);
+            for(int j = 0; j < n; j++){
+                if(bits[i] == 1)
+                    dataMod[(i+1)*(j+1)] = MAX_AMP * Math.sin(Math.PI*2*FP*i/FECH);
+            }
         }
     }
 
