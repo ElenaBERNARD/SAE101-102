@@ -62,9 +62,31 @@ public class DosSend {
 
         try  {
             outStream.write(new byte[]{'R', 'I', 'F', 'F'});
-            /*
-                À compléter
-            */
+            /*À compléter*/
+            // File size (usually done after creation)
+            outStream.write(new byte[]{' ', ' ', ' ', ' '});
+            // File Type Header, WAVE
+            outStream.write(new byte[]{'W', 'A', 'V', 'E'});
+            // Fromat chunk marker
+            outStream.write(new byte[]{'f', 'm', 't', ' '});
+            // Lenght of data
+            writeLittleEndian(FMT, 4, outStream);
+            // Type of format
+            writeLittleEndian(2, 2, outStream);
+            // Number of channels
+            writeLittleEndian(CHANNELS, 2, outStream);
+            // Sample rate
+            writeLittleEndian(FECH, 4, outStream);
+            // (Sample Rate * BitsPerSample * Channels) / 8
+            writeLittleEndian((int)nbBytes, 4, outStream);
+            // 1 --> 8 bit-mono
+            writeLittleEndian(1, 2, outStream);
+            // Bits per sample
+            writeLittleEndian(8, 2, outStream);
+            // Data section marker
+            outStream.write(new byte[]{'d', 'a', 't', 'a'});
+            // Size of data section
+            writeLittleEndian((int)taille, 4, outStream);
         } catch(Exception e){
             System.out.printf(e.toString());
         }
@@ -128,6 +150,11 @@ public class DosSend {
      */
     public void modulateData(byte[] bits){
         /* À compléter */
+        this.dataMod = new double[bits.length + 8];
+        for(int i = 0; i < bits.length; i++){
+            if(bits[i] == 1)
+                dataMod[i] = this.MAX_AMP * Math.sin(2*Math.PI*this.FP);
+        }
     }
 
     /**
