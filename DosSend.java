@@ -99,9 +99,9 @@ public class DosSend {
      */
     public void writeNormalizeWavData(){
         try {
-            /*
-                À compléter
-            */
+            for (double data : dataMod) {
+                writeLittleEndian((int)data, 8, outStream);                
+            }
         }
         catch (Exception e) {
             System.out.println("Erreur d'écriture");
@@ -153,7 +153,7 @@ public class DosSend {
         this.dataMod = new double[bits.length + 8];
         for(int i = 0; i < bits.length; i++){
             if(bits[i] == 1)
-                dataMod[i] = this.MAX_AMP * Math.sin(2*Math.PI*this.FP);
+                dataMod[i] = this.MAX_AMP * Math.sin(2*Math.PI*this.FP*i/FECH);
         }
     }
 
