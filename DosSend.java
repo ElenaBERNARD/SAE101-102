@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class DosSend {
@@ -79,8 +80,8 @@ public class DosSend {
             /*
                 À compléter
             */
-            }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.out.println("Erreur d'écriture");
         }
     }
@@ -90,9 +91,15 @@ public class DosSend {
      * @return the number of characters read
      */
     public int readTextData(){
-        /*
-            À compléter
-        */
+        // cree un scanner
+        Scanner scan = new Scanner(System.in);
+
+        // lire une chaine de caractere
+        String inputString = scan.nextLine();
+
+        // convertir en tableau de charactere
+        this.dataChar = inputString.toCharArray();
+        return dataChar.length;
     }
 
     /**
@@ -101,9 +108,18 @@ public class DosSend {
      * @return byte array containing only 0 & 1
      */
     public byte[] charToBits(char[] chars){
-        /*
-             À compléter
-        */
+        /*À compléter*/
+        int n = chars.length;
+        byte[] bytes = new byte[n*8];
+        for (int i = 0; i < n; i++){
+            char[] binaryChar = Integer.toBinaryString((byte)chars[i]).toCharArray();
+            int nbBits = binaryChar.length;
+            for(int j = 0; j < nbBits; j++){
+                if(binaryChar[nbBits - j - 1] == '1')
+                    bytes[(i+1)*8 - j - 1] = 1;
+            }
+        }
+        return bytes;
     }
 
     /**
@@ -111,9 +127,7 @@ public class DosSend {
      * @param bits the data to modulate
      */
     public void modulateData(byte[] bits){
-        /*
-            À compléter
-        */
+        /* À compléter */
     }
 
     /**
@@ -138,7 +152,7 @@ public class DosSend {
      * @param mode "line" or "point"
      * @param title the title of the window
      */
-    public static void displaySig(List<double[]> listOfSigs, int start, int stop, String mode, String title){
+    public static void displaySig(ArrayList<double[]> listOfSigs, int start, int stop, String mode, String title){
       /*
           À compléter
       */
