@@ -156,22 +156,32 @@ public class DosSend {
      */
     public void modulateData(byte[] bits) {
         /* À compléter */
+        int index = 0;
         int n = FECH / BAUDS;
         int nbrEchantillons = (bits.length + START_SEQ.length) * n;
         dataMod = new double[nbrEchantillons];
         for (int i = 0; i < START_SEQ.length; i++) {
             if (START_SEQ[i] == 1) {
                 for (int j = 0; j < n; j++) {
-                    dataMod[(i + 1) * (j + 1)] = MAX_AMP * Math.sin(2*Math.PI*FP*(i + 1) * (j + 1)/FECH);
+                    index = i*n + (j + 1);
+                    dataMod[index] = MAX_AMP * Math.sin(2*Math.PI*FP*index/FECH);
                 }
+                System.out.println("1, " + index + " t=" + (double)i/BAUDS);
             }
+            else
+                System.out.println("0");
         }
-        for (int i = 1; i <= bits.length; i++) {
-            if (bits[i-1] == 1) {
+        int offset = START_SEQ.length;
+        for (int i = offset; i < bits.length+offset-1; i++) {
+            if (bits[i-offset] == 1) {
                 for (int j = 0; j < n; j++) {
-                    dataMod[(i + 1) * (j + 1)] = MAX_AMP * Math.sin(2*Math.PI*FP*(i + 1) * (j + 1)/FECH);
+                    index = i*n + (j + 1);
+                    dataMod[index] = MAX_AMP * Math.sin(2*Math.PI*FP*index/FECH);
                 }
+                System.out.println("1, " + index + " t=" + (double)i/BAUDS);
             }
+            else
+                System.out.println("0");
         }
     }
 
