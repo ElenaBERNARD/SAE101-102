@@ -104,7 +104,12 @@ public class DosSend {
     public void writeNormalizeWavData() {
         try {
             for (double data : dataMod) {
-                writeLittleEndian((int) data, 1, outStream);
+                double normalizedData = data / MAX_AMP;
+
+                byte byteData = (byte) ((normalizedData + 1.0) * 127.5);
+
+                // Write the normalized byte sample in little endian format
+                writeLittleEndian(byteData, 1, outStream);
             }
         } catch (Exception e) {
             System.out.println("Erreur d'écriture");
