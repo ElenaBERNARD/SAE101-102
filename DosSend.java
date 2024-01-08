@@ -1,6 +1,6 @@
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class DosSend {
@@ -63,34 +63,18 @@ public class DosSend {
 
         try {
             outStream.write(new byte[] { 'R', 'I', 'F', 'F' });
-            /* À compléter */
-            // File size (usually done after creation)
-            writeLittleEndian((int) nbBytes, 4, outStream);
-            // File Type Header, WAVE
-            outStream.write(new byte[] { 'W', 'A', 'V', 'E' });
-
-            // Fromat block marker
-            outStream.write(new byte[] { 'f', 'm', 't', ' ' });
-            // Number of chunk in block
-            writeLittleEndian(16, 4, outStream);
-
-            // Type of format
-            writeLittleEndian(1, 2, outStream);
-            // Number of channels
-            writeLittleEndian(CHANNELS, 2, outStream);
-            // Frequency
-            writeLittleEndian(FECH, 4, outStream);
-            // Bytes per second
-            writeLittleEndian(BAUDS, 4, outStream);
-            // Bytes per block
-            writeLittleEndian(1, 2, outStream);
-            // Bits per sample
-            writeLittleEndian(8, 2, outStream);
-
-            // Data section marker
+            writeLittleEndian((int) (36 + nbBytes), 4, outStream); // Total file size - 8 bytes
+            outStream.write(new byte[] { 'W', 'A', 'V', 'E', 'f', 'm', 't', ' ' });
+            writeLittleEndian(16, 4, outStream); // Size of fmt chunk
+            writeLittleEndian(1, 2, outStream); // Audio format (1 for PCM)
+            writeLittleEndian(CHANNELS, 2, outStream); // Number of channels
+            writeLittleEndian(FECH, 4, outStream); // Sample rate
+            writeLittleEndian(FECH * CHANNELS * FMT / 8, 4, outStream); // Byte rate
+            writeLittleEndian(CHANNELS * FMT / 8, 2, outStream); // Block align
+            writeLittleEndian(FMT, 2, outStream); // Bits per sample
             outStream.write(new byte[] { 'd', 'a', 't', 'a' });
-            // Size of data section
-            writeLittleEndian((int) nbBytes - 44, 4, outStream);
+            writeLittleEndian((int) nbBytes, 4, outStream); // Size of data chunk
+
         } catch (Exception e) {
             System.out.printf(e.toString());
         }
@@ -103,15 +87,25 @@ public class DosSend {
      */
     public void writeNormalizeWavData() {
         try {
-            for (double data : dataMod) {
-                double normalizedData = data / MAX_AMP;
+            int bitDepth = FMT;
+            double scale = Math.pow(2, bitDepth - 1) - 1;
 
-                short shortData = (short) ((normalizedData) * FP);
+            for (double sample : dataMod) {
+                // Normalize the sample to the range [-1.0, 1.0]
+                double normalizedSample = sample / scale;
 
-                // Write the normalized byte sample in little endian format
-                writeLittleEndian(shortData, 2, outStream);
+                // Clip the sample to the valid range [-1.0, 1.0]
+                normalizedSample = Math.max(-1.0, Math.min(1.0, normalizedSample));
+
+                // Convert the normalized sample to a byte
+                int intSample = (int) (normalizedSample * scale);
+
+                // Write the sample in little-endian format
+                writeLittleEndian(intSample, 2, outStream);
             }
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
             System.out.println("Erreur d'écriture");
         }
     }
@@ -122,14 +116,7 @@ public class DosSend {
      * @return the number of characters read
      */
     public int readTextData() {
-        // cree un scanner
-        Scanner scan = new Scanner(System.in);
-
-        // lire une chaine de caractere
-        String inputString = scan.nextLine();
-
-        // convertir en tableau de charactere
-        this.dataChar = inputString.toCharArray();
+        this.dataChar = input.nextLine().toCharArray();
         return dataChar.length;
     }
 
@@ -140,15 +127,16 @@ public class DosSend {
      * @return byte array containing only 0 & 1
      */
     public byte[] charToBits(char[] chars) {
-        /* À compléter */
+        /*
+         * À compléter
+         */
         int n = chars.length;
         byte[] bytes = new byte[n * 8];
+
         for (int i = 0; i < n; i++) {
-            char[] binaryChar = Integer.toBinaryString((byte) chars[i]).toCharArray();
-            int nbBits = binaryChar.length;
-            for (int j = 0; j < nbBits; j++) {
-                if (binaryChar[nbBits - j - 1] == '1')
-                    bytes[(i + 1) * 8 - j - 1] = 1;
+            String binaryString = String.format("%8s", Integer.toBinaryString(chars[i])).replace(' ', '0');
+            for (int j = 0; j < 8; j++) {
+                bytes[i * 8 + j] = (byte) (binaryString.charAt(j) - '0');
             }
         }
         return bytes;
@@ -160,33 +148,35 @@ public class DosSend {
      * @param bits the data to modulate
      */
     public void modulateData(byte[] bits) {
-        /* À compléter */
-        int index = 0;
+        /*
+         * À compléter
+         */
         int n = FECH / BAUDS;
         int nbrEchantillons = (bits.length + START_SEQ.length) * n;
         dataMod = new double[nbrEchantillons];
+
+        int index = 0;
+
+        // Modulate START_SEQ
         for (int i = 0; i < START_SEQ.length; i++) {
             if (START_SEQ[i] == 1) {
                 for (int j = 0; j < n; j++) {
-                    index = i*n + (j + 1);
-                    dataMod[index] = MAX_AMP * Math.sin(2*Math.PI*FP*index/FECH);
+                    index = i * n + j;
+                    dataMod[index] = MAX_AMP * Math.sin(2 * Math.PI * FP * index / FECH);
                 }
-                System.out.println("1, " + index + " t=" + (double)i/BAUDS);
             }
-            else
-                System.out.println("0");
         }
+
         int offset = START_SEQ.length;
-        for (int i = offset; i < bits.length+offset-1; i++) {
-            if (bits[i-offset] == 1) {
+
+        // Modulate bits
+        for (int i = 0; i < bits.length; i++) {
+            if (bits[i] == 1) {
                 for (int j = 0; j < n; j++) {
-                    index = i*n + (j + 1);
-                    dataMod[index] = MAX_AMP * Math.sin(2*Math.PI*FP*index/FECH);
+                    index = (i + offset) * n + j;
+                    dataMod[index] = MAX_AMP * Math.sin(2 * Math.PI * FP * index / FECH);
                 }
-                System.out.println("1, " + index + " t=" + (double)i/BAUDS);
             }
-            else
-                System.out.println("0");
         }
     }
 
@@ -203,6 +193,26 @@ public class DosSend {
         /*
          * À compléter
          */
+        int width = 800; // Adjust as needed
+        int height = 400; // Adjust as needed
+
+        StdDraw.setCanvasSize(width, height);
+        StdDraw.setXscale(0, stop - start);
+        StdDraw.setYscale(-1, 1);
+        StdDraw.clear(StdDraw.WHITE);
+        StdDraw.setTitle(title);
+
+        if (mode.equals("line")) {
+            for (int i = start; i < stop - 1; i++) {
+                StdDraw.line(i - start, sig[i], i + 1 - start, sig[i + 1]);
+            }
+        } else if (mode.equals("point")) {
+            for (int i = start; i < stop; i++) {
+                StdDraw.point(i - start, sig[i]);
+            }
+        }
+
+        StdDraw.show();
     }
 
     /**
@@ -214,10 +224,38 @@ public class DosSend {
      * @param mode       "line" or "point"
      * @param title      the title of the window
      */
-    public static void displaySig(ArrayList<double[]> listOfSigs, int start, int stop, String mode, String title) {
+    public static void displaySig(List<double[]> listOfSigs, int start, int stop, String mode, String title) {
         /*
          * À compléter
          */
+        int width = 800; // Adjust as needed
+        int height = 400; // Adjust as needed
+
+        StdDraw.setCanvasSize(width, height);
+        StdDraw.setXscale(0, stop - start);
+        StdDraw.setYscale(-1, 1);
+        StdDraw.clear(StdDraw.WHITE);
+        StdDraw.setTitle(title);
+
+        int numSignals = listOfSigs.size();
+        double yOffset = 2.0 / numSignals; // Adjust as needed
+
+        for (int k = 0; k < numSignals; k++) {
+            double[] sig = listOfSigs.get(k);
+            double yShift = k * yOffset;
+
+            if (mode.equals("line")) {
+                for (int i = start; i < stop - 1; i++) {
+                    StdDraw.line(i - start, sig[i] + yShift, i + 1 - start, sig[i + 1] + yShift);
+                }
+            } else if (mode.equals("point")) {
+                for (int i = start; i < stop; i++) {
+                    StdDraw.point(i - start, sig[i] + yShift);
+                }
+            }
+        }
+
+        StdDraw.show();
     }
 
     public static void main(String[] args) {
