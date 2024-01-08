@@ -63,17 +63,28 @@ public class DosSend {
 
         try {
             outStream.write(new byte[] { 'R', 'I', 'F', 'F' });
-            writeLittleEndian((int) (36 + nbBytes), 4, outStream); // Total file size - 8 bytes
+            // File size
+            writeLittleEndian((int) (36 + nbBytes), 4, outStream);
+            // Writing "WAVE" and "fmt "
             outStream.write(new byte[] { 'W', 'A', 'V', 'E', 'f', 'm', 't', ' ' });
-            writeLittleEndian(16, 4, outStream); // Size of fmt chunk
-            writeLittleEndian(1, 2, outStream); // Audio format (1 for PCM)
-            writeLittleEndian(CHANNELS, 2, outStream); // Number of channels
-            writeLittleEndian(FECH, 4, outStream); // Sample rate
-            writeLittleEndian(FECH * CHANNELS * FMT / 8, 4, outStream); // Byte rate
-            writeLittleEndian(CHANNELS * FMT / 8, 2, outStream); // Block align
-            writeLittleEndian(FMT, 2, outStream); // Bits per sample
+            // Size of fmt chunk
+            writeLittleEndian(16, 4, outStream);
+            // Audio format (1 for PCM) 
+            writeLittleEndian(1, 2, outStream);
+            // Number of channels (here 1 is mono)
+            writeLittleEndian(CHANNELS, 2, outStream);
+            // Sample rate
+            writeLittleEndian(FECH, 4, outStream);
+            // Byte rate
+            writeLittleEndian(FECH * CHANNELS * FMT / 8, 4, outStream);
+            // Block align
+            writeLittleEndian(CHANNELS * FMT / 8, 2, outStream);
+            // Bits per sample
+            writeLittleEndian(FMT, 2, outStream);
+            // Writing "data"
             outStream.write(new byte[] { 'd', 'a', 't', 'a' });
-            writeLittleEndian((int) nbBytes, 4, outStream); // Size of data chunk
+            // Size of data chunk
+            writeLittleEndian((int) nbBytes, 4, outStream);
 
         } catch (Exception e) {
             System.out.printf(e.toString());
@@ -87,21 +98,20 @@ public class DosSend {
      */
     public void writeNormalizeWavData() {
         try {
-            int bitDepth = FMT;
-            double scale = Math.pow(2, bitDepth - 1) - 1;
+            double scale = Math.pow(2, FMT - 1) - 1;
 
-            for (double sample : dataMod) {
-                // Normalize the sample to the range [-1.0, 1.0]
-                double normalizedSample = sample / scale;
+            for (double data : dataMod) {
+                // Set the data between [-1.0, 1.0]
+                double normalizedData = data / scale;
 
-                // Clip the sample to the valid range [-1.0, 1.0]
-                normalizedSample = Math.max(-1.0, Math.min(1.0, normalizedSample));
+                // Forces the normalizedData between -1 and 1
+                normalizedData = Math.max(-1.0, Math.min(1.0, normalizedData));
 
                 // Convert the normalized sample to a byte
-                int intSample = (int) (normalizedSample * scale);
+                int intData = (int) (normalizedData * scale);
 
-                // Write the sample in little-endian format
-                writeLittleEndian(intSample, 2, outStream);
+                // Write the data in little-endian
+                writeLittleEndian(intData, 2, outStream);
             }
         } catch (
         Exception e) {
@@ -115,6 +125,7 @@ public class DosSend {
      * @return the number of characters read
      */
     public int readTextData() {
+        // Get the first line of the text file, then converts it to an array of char
         this.dataChar = input.nextLine().toCharArray();
         return dataChar.length;
     }
@@ -126,15 +137,15 @@ public class DosSend {
      * @return byte array containing only 0 & 1
      */
     public byte[] charToBits(char[] chars) {
-        /*
-         * À compléter
-         */
         int n = chars.length;
+        // Create an array 8 times bigger to hold all bits
         byte[] bytes = new byte[n * 8];
 
         for (int i = 0; i < n; i++) {
+            // Using toBinaryString to get the binary value
             String binaryString = String.format("%8s", Integer.toBinaryString(chars[i])).replace(' ', '0');
             for (int j = 0; j < 8; j++) {
+                // Moving threw binarytring to get each bits 
                 bytes[i * 8 + j] = (byte) (binaryString.charAt(j) - '0');
             }
         }
@@ -147,13 +158,13 @@ public class DosSend {
      * @param bits the data to modulate
      */
     public void modulateData(byte[] bits) {
-        /*
-         * À compléter
-         */
+        // Number of sample per symbol
         int n = FECH / BAUDS;
+        // Total number of sample
         int nbrEchantillons = (bits.length + START_SEQ.length) * n;
         dataMod = new double[nbrEchantillons];
 
+        // Current index, used to move throw dataMod
         int index = 0;
 
         // Modulate START_SEQ
@@ -166,6 +177,7 @@ public class DosSend {
             }
         }
 
+        // Offset to not overwite START_SEQ
         int offset = START_SEQ.length;
 
         // Modulate bits
@@ -189,11 +201,8 @@ public class DosSend {
      * @param title the title of the window
      */
     public static void displaySig(double[] sig, int start, int stop, String mode, String title) {
-        /*
-         * À compléter
-         */
-        int width = 800;
-        int height = 400;
+        int width = 1200;
+        int height = 600;
 
         StdDraw.setCanvasSize(width, height);
         StdDraw.setXscale(0, stop - start);
@@ -224,8 +233,8 @@ public class DosSend {
      * @param title      the title of the window
      */
     public static void displaySig(List<double[]> listOfSigs, int start, int stop, String mode, String title) {
-        int width = 800;
-        int height = 400;
+        int width = 1200;
+        int height = 600;
 
         StdDraw.setCanvasSize(width, height);
         StdDraw.setXscale(0, stop - start);

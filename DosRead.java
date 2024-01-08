@@ -92,7 +92,9 @@ public class DosRead {
      * Reverse the negative values of the audio array
      */
     public void audioRectifier() {
+        // Moving through the audio array
         for (int i = 0; i < audio.length; i++) {
+            // Taking the absolute value of each audio value
             audio[i] = Math.abs(audio[i]);
         }
     }
@@ -104,9 +106,11 @@ public class DosRead {
      * @param n the number of samples to average
      */
     public void audioLPFilter(int n) {
+        // List used to store the filtered audio
         double[] filteredAudio = new double[audio.length];
 
         for (int i = 0; i < audio.length; i++) {
+            // Using an average to filter the audio
             double sum = 0;
             for (int j = Math.max(0, i - n + 1); j <= i; j++) {
                 sum += audio[j];
@@ -124,6 +128,7 @@ public class DosRead {
      */
     public void audioResampleAndThreshold(int period, int threshold) {
         int n = audio.length / period;
+        // Initializing outputBits, will contain the binary value of the message
         outputBits = new int[n];
 
         for (int i = 0; i < n; i++) {
@@ -131,8 +136,10 @@ public class DosRead {
             for (int j = 0; j < period; j++) {
                 sum += audio[i * period + j];
             }
+            // Getting the average of values over a period
             double avg = sum / period;
 
+            // If the avererage is over the thresold the bit is set to 1, otherwise set to 0
             outputBits[i] = (avg > threshold) ? 1 : 0;
         }
     }
@@ -147,6 +154,7 @@ public class DosRead {
         // Find the start sequence in outputBits
         int startIdx = -1;
         for (int i = 0; i < outputBits.length - START_SEQ.length; i++) {
+            // Moving trough outpuBits to find the start sequence
             if (Arrays.equals(Arrays.copyOfRange(outputBits, i, i + START_SEQ.length), START_SEQ)) {
                 startIdx = i;
                 break;
@@ -155,15 +163,20 @@ public class DosRead {
 
         if (startIdx != -1) {
             // Start sequence found, decode the message
+            // Size of the message, without the start sequence
             int messageSize = (outputBits.length - startIdx - START_SEQ.length) / 8;
+            // Char array to hold the final decoded message
             decodedChars = new char[messageSize];
             int charIndex = 0;
 
+            // Iterating through outputBits, starting after the start sequence, by increment of 8 bits (bytes)
             for (int i = startIdx + START_SEQ.length; i < outputBits.length; i += 8) {
                 int charCode = 0;
+                // Go through each bit individually
                 for (int j = 0; j < 8; j++) {
                     charCode = (charCode << 1) | outputBits[i + j];
                 }
+                // Converting the charCode to a char
                 decodedChars[charIndex++] = (char) charCode;
             }
         } else {
