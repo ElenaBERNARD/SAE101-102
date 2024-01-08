@@ -88,6 +88,7 @@ public class DosRead {
             int intBits = ((audioData[i + 3] & 0xFF) << 24) |
                 ((audioData[i + 2] & 0xFF) << 16) |
                 ((audioData[i + 1] & 0xFF) << 8) |
+                ((audioData[i + 1] & 0xFF) << 8) |
                 (audioData[i] & 0xFF);
             audio[j] = Float.intBitsToFloat(intBits);
           }
@@ -102,6 +103,9 @@ public class DosRead {
       /*
         À compléter
       */
+      for (int i = 0; i < audio.length; i++) {
+        audio[i] = Math.abs(audio[i]);
+      }
     }
 
     /**
@@ -113,6 +117,18 @@ public class DosRead {
       /*
         À compléter
       */
+      double[] filteredAudio = new double[audio.length];
+
+      for (int i = 0; i < audio.length; i++) {
+        double sum = 0;
+        for (int j = Math.max(0, i - n + 1); j <= i; j++) {
+          sum += audio[j];
+        }
+        filteredAudio[i] = sum / Math.min(n, i + 1);
+      }
+
+      // Replace the original audio with the filtered audio
+      audio = filteredAudio;
     }
 
     /**
@@ -124,6 +140,23 @@ public class DosRead {
       /*
         À compléter
       */
+      int newSize = audio.length / period;
+      double[] resampledAudio = new double[newSize];
+
+      for (int i = 0; i < newSize; i++) {
+        double sum = 0;
+        for (int j = 0; j < period; j++) {
+          sum += audio[i * period + j];
+        }
+        resampledAudio[i] = sum / period;
+      }
+
+      // Apply thresholding
+      outputBits = new int[newSize];
+
+      for (int i = 0; i < newSize; i++) {
+        outputBits[i] = (resampledAudio[i] >= threshold) ? 1 : 0;
+      }
     }
 
     /**
