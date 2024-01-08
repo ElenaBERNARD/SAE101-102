@@ -106,10 +106,10 @@ public class DosSend {
             for (double data : dataMod) {
                 double normalizedData = data / MAX_AMP;
 
-                byte byteData = (byte) ((normalizedData + 1.0) * 127.5);
+                short shortData = (short) ((normalizedData) * FP);
 
                 // Write the normalized byte sample in little endian format
-                writeLittleEndian(byteData, 1, outStream);
+                writeLittleEndian(shortData, 2, outStream);
             }
         } catch (Exception e) {
             System.out.println("Erreur d'écriture");
