@@ -104,7 +104,6 @@ public class DosSend {
                 writeLittleEndian(intSample, 2, outStream);
             }
         } catch (
-
         Exception e) {
             System.out.println("Erreur d'écriture");
         }
@@ -193,8 +192,8 @@ public class DosSend {
         /*
          * À compléter
          */
-        int width = 800; // Adjust as needed
-        int height = 400; // Adjust as needed
+        int width = 800;
+        int height = 400;
 
         StdDraw.setCanvasSize(width, height);
         StdDraw.setXscale(0, stop - start);
@@ -225,11 +224,8 @@ public class DosSend {
      * @param title      the title of the window
      */
     public static void displaySig(List<double[]> listOfSigs, int start, int stop, String mode, String title) {
-        /*
-         * À compléter
-         */
-        int width = 800; // Adjust as needed
-        int height = 400; // Adjust as needed
+        int width = 800;
+        int height = 400;
 
         StdDraw.setCanvasSize(width, height);
         StdDraw.setXscale(0, stop - start);
@@ -238,7 +234,7 @@ public class DosSend {
         StdDraw.setTitle(title);
 
         int numSignals = listOfSigs.size();
-        double yOffset = 2.0 / numSignals; // Adjust as needed
+        double yOffset = 2.0 / numSignals;
 
         for (int k = 0; k < numSignals; k++) {
             double[] sig = listOfSigs.get(k);
@@ -246,11 +242,11 @@ public class DosSend {
 
             if (mode.equals("line")) {
                 for (int i = start; i < stop - 1; i++) {
-                    StdDraw.line(i - start, sig[i] + yShift, i + 1 - start, sig[i + 1] + yShift);
+                    StdDraw.line((double) i - start, sig[i] + yShift, i + 1.0 - start, sig[i + 1] + yShift);
                 }
             } else if (mode.equals("point")) {
                 for (int i = start; i < stop; i++) {
-                    StdDraw.point(i - start, sig[i] + yShift);
+                    StdDraw.point((double) i - start, sig[i] + yShift);
                 }
             }
         }
