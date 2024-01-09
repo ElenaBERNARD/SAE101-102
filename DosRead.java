@@ -1,6 +1,12 @@
 import java.io.*;
 import java.util.Arrays;
 
+/**
+ * Béliard Valentin
+ * Bernard Elena
+ * C1
+ */
+
 public class DosRead {
     static final int FP = 1000;
     static final int BAUDS = 100;

@@ -3,6 +3,12 @@ import java.io.FileOutputStream;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Béliard Valentin
+ * Bernard Elena
+ * C1
+ */
+
 public class DosSend {
     final int FECH = 44100; // fréquence d'échantillonnage
     final int FP = 1000; // fréquence de la porteuses

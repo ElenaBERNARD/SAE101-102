@@ -1,0 +1,55 @@
+Execution de DosSend avec text.txt 
+Fichier contenant une fable de La Fontaine "Maitre corbeau, sur son arbre perche"
+Commande :
+>>>java DosSend < text.txt 
+Sortie :
+Message : Maitre corbeau, sur son arbre perche
+    Nombre de symboles : 36
+    Nombre d'échantillons : 130536
+    Durée : 2.96 s
+Correspond aux valeurs attendues
+
+DisplaySig : semble correspondre aux attentes, la sequence de demarrage est visible (10101010)
+
+
+Exectution de DosRead avec le message precedent
+Commande :
+>>> java DosRead ./DosOok_message.wav
+Sortie :
+Fichier audio: ./DosOok_message.wav
+    Sample Rate: 44100 Hz
+    Bits per Sample: 16 bits
+    Data Size: 261072 bytes
+Message décodé : [M, a, i, t, r, e,  , c, o, r, b, e, a, u, ,,  , s, u, r,  , s, o, n,  , a, r, b, r, e,  , p, e, r, c, h, e]
+Correspond aux valeurs attendues
+
+DisplaySig : semble correspondre aux attentes, la sequence de demarrage est visible (10101010)
+
+######################################################################################################################
+
+Execution de DosSend avec special_caracteres.txt
+Fichier contenant une liste de caracters speciaux " !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+Commande :
+>>>java DosSend < special_caracteres.txt
+Sortie :
+Message : " !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+    Nombre de symboles : 35
+    Nombre d'échantillons : 127008
+    Durée : 2.88 s
+Correspond aux valeurs attendues
+
+DisplaySig : semble correspondre aux attentes, la sequence de demarrage est visible (10101010)
+
+
+Exectution de DosRead avec le message precedent
+Commande :
+>>> java DosRead ./DosOok_message.wav
+Sortie :
+Fichier audio: ./DosOok_message.wav
+    Sample Rate: 44100 Hz
+    Bits per Sample: 16 bits
+    Data Size: 254016 bytes
+Message décodé : [",  , !, ", #, $, %, &, ', (, ), *, +, ,, -, ., /, :, ;, <, =, >, ?, @, [, \, ], ^, _, `, {, |, }, ~, "]
+Correspond aux valeurs attendues
+
+DisplaySig : semble correspondre aux attentes, la sequence de demarrage est visible (10101010)
