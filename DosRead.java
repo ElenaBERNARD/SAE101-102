@@ -76,13 +76,9 @@ public class DosRead {
 
         for (int i = 0, j = 0; i < dataSize; i += bytesPerSample, j++) {
             if (bytesPerSample == 2) {
-                audio[j] = ((audioData[i + 1] & 0xFF) << 8 | (audioData[i] & 0xFF));
+                audio[j] = byteArrayToInt(audioData, i, 16);
             } else if (bytesPerSample == 4) {
-                int intBits = ((audioData[i + 3] & 0xFF) << 24) |
-                        ((audioData[i + 2] & 0xFF) << 16) |
-                        ((audioData[i + 1] & 0xFF) << 8) |
-                        ((audioData[i + 1] & 0xFF) << 8) |
-                        (audioData[i] & 0xFF);
+                int intBits = byteArrayToInt(audioData, i, 32);
                 audio[j] = Float.intBitsToFloat(intBits);
             }
         }
