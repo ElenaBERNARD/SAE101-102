@@ -1,0 +1,136 @@
+Tests :
+
+THE .wav FILES WERE NOT KEPT HERE AND WOULD HAVE TO BE GENERATED AGAIN WITH DosSend
+THIS WAS DONE TO SAVE SPACE
+THE RAW TEXT FILES ARE THE SAME AS THE ONE MENTIONNED IN THE .pdf FILE
+
+Text file with 10 random character (file name : random10.txt)
+
+Run 1
+LP1 : 0.014182989s
+LP2 : 0.002642258s
+
+Run 2
+LP1 : 0.014562704s
+LP2 : 0.002592782s
+
+Run 3
+LP1 : 0.010091149s
+LP2 : 0.002513277s
+
+
+Text file with 100 random character (file name : random100.txt)
+
+Run 1
+LP1 : 0.060828218s
+LP2 : 0.009445905s
+
+Run 2
+LP1 : 0.068417422s
+LP2 : 0.010710162s
+
+Run 3
+LP1 : 0.063159261s
+LP2 : 0.010035724s
+
+Text file with 1000 random character (file name : random1000.txt)
+
+Run 1
+LP1 : 0.61460893s
+LP2 : 0.042889528s
+
+Run 2
+LP1 : 0.579599934s
+LP2 : 0.040122938s
+
+Run 3
+LP1 : 0.577377916s
+LP2 : 0.041259426s
+
+#############################################
+
+Text file with 10 non random characters (file name : t10.txt)
+
+Run 1
+LP1 : 0.011526675s
+LP2 : 0.003062696s
+
+Run 2
+LP1 : 0.010457885s
+LP2 : 0.002843382s
+
+Run 3
+LP1 : 0.011693592s
+LP2 : 0.003110979s
+
+Text file with 100 non random characters (file name : t100.txt)
+
+Run 1
+LP1 : 0.067285416s
+LP2 : 0.01078881s
+
+Run 2
+LP1 : 0.065079389s
+LP2 : 0.013077472s
+
+Run 3
+LP1 : 0.061557843s
+LP2 : 0.011199144s
+
+Text file with 1000 non random characters (file name : t1000.txt)
+
+Run 1
+LP1 : 0.614789237s
+LP2 : 0.045822596s
+
+Run 2
+LP1 : 0.608166324s
+LP2 : 0.050359022s
+
+Run 3
+LP1 : 0.564639031s
+LP2 : 0.039049487s
+
+#############################################
+
+Text file with 10 coherent sentences (file name : LoremIpsum10.txt)
+
+Run 1
+LP1 : 0.012143936
+LP2 : 0.003080402
+
+Run 2
+LP1 : 0.013202679
+LP2 : 0.003546053
+
+Run 3
+LP1 : 0.011368458
+LP2 : 0.003545865
+
+Text file with 100 coherent sentences (file name : LoremIpsum100.txt)
+
+Run 1
+LP1 : 0.062012864s
+LP2 : 0.010023464s
+
+Run 2
+LP1 : 0.065153668s
+LP2 : 0.009391616s
+
+Run 3
+LP1 : 0.06372779s
+LP2 : 0.010608141s
+
+Text file with 1000 coherent sentences (file name : LoremIpsum1000.txt)
+
+Run 1
+LP1 : 0.569915673s
+LP2 : 0.046256298s
+
+Run 2
+LP1 : 0.560444822s
+LP2 : 0.042041442s
+
+Run 3
+LP1 : 0.577107869s
+LP2 : 0.038943242s

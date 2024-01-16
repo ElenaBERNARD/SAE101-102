@@ -290,7 +290,5 @@ public class DosSend {
         System.out.println("\tDurée : " + dosSend.duree + " s");
         System.out.println();
 
-        // exemple d'affichage du signal modulé dans une fenêtre graphique
-        displaySig(dosSend.dataMod, 1000, 3000, "line", "Signal modulé");
     }
 }

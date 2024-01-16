@@ -1,11 +1,14 @@
 import java.io.*;
 import java.util.Arrays;
+<<<<<<< Updated upstream
 
 /**
  * Béliard Valentin
  * Bernard Elena
  * C1
  */
+=======
+>>>>>>> Stashed changes
 
 public class DosRead {
     static final int FP = 1000;
@@ -99,6 +102,7 @@ public class DosRead {
             // Taking the absolute value of each audio value
             audio[i] = Math.abs(audio[i]);
         }
+<<<<<<< Updated upstream
     }
 
     /**
@@ -120,6 +124,8 @@ public class DosRead {
             filteredAudio[i] = sum / Math.min(n, i + 1);
         }
         audio = filteredAudio;
+=======
+>>>>>>> Stashed changes
     }
 
     /**
@@ -171,7 +177,12 @@ public class DosRead {
             decodedChars = new char[messageSize];
             int charIndex = 0;
 
+<<<<<<< Updated upstream
             // Iterating through outputBits, starting after the start sequence, by increment of 8 bits (bytes)
+=======
+            // Iterating through outputBits, starting after the start sequence, by increment
+            // of 8 bits (bytes)
+>>>>>>> Stashed changes
             for (int i = startIdx + START_SEQ.length; i < outputBits.length; i += 8) {
                 int charCode = 0;
                 // Go through each bit individually
@@ -188,6 +199,7 @@ public class DosRead {
 
     /**
      * Print the elements of an array
+     * 
      * @param data the array to print
      */
     public static void printIntArray(char[] data) {
@@ -196,10 +208,11 @@ public class DosRead {
 
     /**
      * Display a signal in a window
-     * @param sig  the signal to display
+     * 
+     * @param sig   the signal to display
      * @param start the first sample to display
-     * @param stop the last sample to display
-     * @param mode "line" or "point"
+     * @param stop  the last sample to display
+     * @param mode  "line" or "point"
      * @param title the title of the window
      */
     public static void displaySig(double[] sig, int start, int stop, String mode, String title) {
@@ -226,9 +239,9 @@ public class DosRead {
     }
 
     /**
-    *  Un exemple de main qui doit pourvoir être exécuté avec les méthodes
-    * que vous aurez conçues.
-    */
+     * Un exemple de main qui doit pourvoir être exécuté avec les méthodes
+     * que vous aurez conçues.
+     */
     public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Usage: java DosRead <input_wav_file>");
@@ -250,18 +263,19 @@ public class DosRead {
         dosRead.readAudioDouble();
         // reverse the negative values
         dosRead.audioRectifier();
-        // apply a low pass filter
-        dosRead.audioLPFilter(44);
+
+        
+
         // Resample audio data and apply a threshold to output only 0 & 1
-        dosRead.audioResampleAndThreshold(dosRead.sampleRate/BAUDS, 12000 );
+        dosRead.audioResampleAndThreshold(dosRead.sampleRate / BAUDS, 12000);
 
         dosRead.decodeBitsToChar();
-        if (dosRead.decodedChars != null){
-            System.out.print("Message décodé : ");
-            printIntArray(dosRead.decodedChars);
+        if (dosRead.decodedChars != null) {
+        System.out.print("Message décodé : ");
+        printIntArray(dosRead.decodedChars);
         }
 
-        displaySig(dosRead.audio, 0, dosRead.audio.length-1, "line", "Signal audio");
+        displaySig(dosRead.audio, 0, dosRead.audio.length - 1, "line", "Signal audio");
 
         // Close the file input stream
         try {
